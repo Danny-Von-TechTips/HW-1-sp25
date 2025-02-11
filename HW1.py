@@ -23,21 +23,35 @@ def initial_greeting():
         add_invoice()
     else:
         print("Okay, let's move on.")
+    
+    input3 = input("Would you like to view all users? (y/n) ").strip().lower()
+    if input3 == "y":
+        read_users()
+
         
 def add_user():
     print("Great! Let's add a new user to the database.")
     first_name = input("Enter the first name of the user: ").strip()
     last_name = input("Enter the last name of the user: ").strip()
 
-    # Using parameterized query to prevent SQL injection
     query = "INSERT INTO users (First_Name, Last_Name) VALUES (%s, %s)"
     values = (first_name, last_name)
 
     try:
-        execute_query(conn, query, values)
+        execute_query(conn, query, values)  # Now correctly supports 3 arguments
         print(f"User '{first_name} {last_name}' added successfully!")
     except Exception as e:
         print(f"Error adding user: {e}")
+
+def read_users():
+    query = "SELECT * FROM users"
+    try:
+        results = execute_read_query(conn, query)
+        for row in results:
+            print(row)
+    except Exception as e:
+        print(f"Error reading users: {e}")
+
 
 # Start program
 initial_greeting()

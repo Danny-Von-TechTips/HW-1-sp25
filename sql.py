@@ -15,14 +15,22 @@ def create_connection(host_name, user_name, user_password, db_name):
         print(f"The error {e} ocurred.")
     return connection
 
-def execute_query(connection, query):
+def execute_query(connection, query, values=None):
     cursor = connection.cursor()
     try:
-        cursor.execute(query)
+        if values:
+            cursor.execute(query, values)  # Use parameterized query
+        else:
+            cursor.execute(query)
+        
         connection.commit()
         print("Query executed successfully")
     except Error as e:
-        print(f"The error {e} ocurred.")
+        print(f"The error {e} occurred.")
+    finally:
+        cursor.close()
+
+
 
 def execute_read_query(connection, query):
     cursor = connection.cursor(dictionary=True)

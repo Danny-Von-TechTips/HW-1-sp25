@@ -1,3 +1,4 @@
+'''
 import mysql.connector
 import creds
 from mysql.connector import Error
@@ -20,3 +21,4 @@ users = execute_read_query(conn, select_users)
 
 for user in users:
     print(user["First_Name"] + " has the last name: " + user["Last_Name"])
+'''
