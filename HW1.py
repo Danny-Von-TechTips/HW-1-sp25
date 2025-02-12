@@ -1,9 +1,7 @@
 import mysql.connector
 import creds
 from mysql.connector import Error
-from sql import create_connection
-from sql import execute_query
-from sql import execute_read_query
+from sql import create_connection, execute_query, execute_read_query
 
 # Establish database connection
 myCreds = creds.Creds()
@@ -11,6 +9,9 @@ conn = create_connection(myCreds.conString, myCreds.userName, myCreds.password, 
 
 def initial_greeting():
     print("Hi there! Welcome to the database management system.")
+    
+    for user in users:
+    print(user["firstname"] + user["lastname"])
     
     input1 = input("Would you like to add a new user to the database? (y/n) ").strip().lower()
     if input1 == "y":
@@ -23,12 +24,7 @@ def initial_greeting():
         add_invoice()
     else:
         print("Okay, let's move on.")
-    
-    input3 = input("Would you like to view all users? (y/n) ").strip().lower()
-    if input3 == "y":
-        read_users()
 
-        
 def add_user():
     print("Great! Let's add a new user to the database.")
     first_name = input("Enter the first name of the user: ").strip()
@@ -38,20 +34,25 @@ def add_user():
     values = (first_name, last_name)
 
     try:
-        execute_query(conn, query, values)  # Now correctly supports 3 arguments
+        execute_query(conn, query, values)  
         print(f"User '{first_name} {last_name}' added successfully!")
     except Exception as e:
         print(f"Error adding user: {e}")
 
-def read_users():
-    query = "SELECT * FROM users"
-    try:
-        results = execute_read_query(conn, query)
-        for row in results:
-            print(row)
-    except Exception as e:
-        print(f"Error reading users: {e}")
+def add_invoice():
+    print("Great! Let's add a new invoice to the database.")
+    invoice_number = input("Enter the invoice number: ").strip()
+    amount = input("Enter the invoice amount: ").strip()
 
+    query = "INSERT INTO invoices (Invoice_Number, Amount) VALUES (%s, %s)"
+    values = (invoice_number, amount)
+
+    try:
+        execute_query(conn, query, values)
+        print(f"Invoice '{invoice_number}' added successfully!")
+    except Exception as e:
+        print(f"Error adding invoice: {e}")
 
 # Start program
 initial_greeting()
+
