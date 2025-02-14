@@ -10,8 +10,16 @@ conn = create_connection(myCreds.conString, myCreds.userName, myCreds.password, 
 def initial_greeting():
     print("Hi there! Welcome to the database management system.")
     
-    for user in users:
-    print(user["firstname"] + user["lastname"])
+    query = "SELECT * FROM users"
+    users = execute_read_query(conn, query)
+    
+    if users:
+        print("Current Users:")
+        for user in users:
+            print(user["First_Name"], user["Last_Name"])
+    else:
+        print("No users found in the database.")
+            
     
     input1 = input("Would you like to add a new user to the database? (y/n) ").strip().lower()
     if input1 == "y":
