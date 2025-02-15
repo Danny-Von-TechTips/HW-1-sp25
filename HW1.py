@@ -11,7 +11,14 @@ def initial_greeting():
     print("Hi there! Welcome to the database management system.")
     
     query = "SELECT * FROM vaults"
-    execute_read_query(conn, query)
+    vaults = execute_read_query(conn, query)
+    print("Here are the current vaults in the database: ")
+    
+    if vaults:
+        for vault in vaults:
+            print(f"ID: {vault['ID']}, Number: {vault['Number']}, Code: {vault['Code']}, Content: {vault['Content']}, Owner: {vault['Owner']}")
+    else:
+        print("No vaults found in the database.")
     
     input1 = input("Would you like to add a new vault to the database? (y/n) ").strip().lower()
     if input1 == "y":
@@ -19,9 +26,17 @@ def initial_greeting():
     else:
         print("Okay, let's move on.")
     
-    input2 = input("Would you like to retrieve your entry by ID and Code? (y/n) ").strip().lower()
+    input2 = input("Would you like to retrieve your entry by your Code? (y/n) ").strip().lower()
     if input2 == "y":
         get_entry_by_code()
+    else:
+        print("Okay, let's move on.")
+
+    input3 = input("Would you like to delete your information? (y/n): ").strip().lower()
+    if input3 == "y":
+        delete_entry()
+    else:
+        print("Thank you for you time. Have a good day!")
 
 def add_vault():
     print("Great! Let's add a new vault to the database.")
@@ -58,9 +73,37 @@ def get_entry_by_code():
             print(f"Content: {entry[0]['Content']}")
             print(f"Owner: {entry[0]['Owner']}")
         else:
-            print("No entry found with the given ID and Code. Please try again.")
+            print("No entry found with the given Code. Please try again.")
     except Exception as e:
         print(f"Error retrieving entry: {e}")
+
+def delete_entry():
+    entry_code = input("Please enter your code: ")
+
+    #Making sure that the user's code matches prior to deletion
+
+    query_check = "SELECT * FROM vaults WHERE Code = %s"
+    values_check = (entry_code,)
+
+    try:
+        cursor = conn.cursor(dictionary = True)
+        cursor.execute(query_check, values_check)
+        entry = cursor.fetchone() #fetches the first matching row
+        cursor.close()
+
+        if entry: # if the entry is in the table
+            confirm = input(f"Are you certian that you wish to delete your data from the vault?: (y/n) ").strip().lower()
+            if confirm == "y":
+                query_delete = "DELETE FROM vaults WHERE Code = %s"
+                values_delete = (entry_code,)
+                execute_query(conn, query_delete, values_delete)
+                print(f"Deletion Successfull")
+            else:
+                print("Deletion Canceled")
+        else:
+            print("No vault found with the provided code")
+    except Exception as e:
+        print(f"ErrorDeletingEntry: {e}")
 
 # Start program
 initial_greeting()
